@@ -1,0 +1,56 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore environment variable files
+.env
+
+# Ignore build directories
+dist/
+build/
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+
+# Ignore coverage reports
+coverage/
+
+# Ignore dependency directories
+vendor/
+
+# Ignore compiled files
+*.out
+*.o
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore Java compiled files
+*.class
+
+# Ignore macOS specific files
+*.DS_Store
+
+# ignore virtual environment
+jongo/
+
+#ignore migrations
+migrations/
+
+#ignore database
+db.sqlite3
+
+#ignore static files
+static/
