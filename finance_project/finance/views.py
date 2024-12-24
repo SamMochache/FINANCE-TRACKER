@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Income, Expense
 from django.contrib.auth.decorators import login_required
+from .models import Income, Expense, Profile
+from decimal import Decimal, InvalidOperation
+from django.http import HttpResponse
 
 
 # Create your views here.
@@ -10,6 +13,10 @@ def home(request):
 
 @login_required
 def dashboard(request):
+    user = request.user
+    # Ensure the profile exists, if not create one
+    if not hasattr(user, 'profile'):
+        Profile.objects.create(user=user)
     # Fetch user-specific transactions
     income_logs = Income.objects.filter(user=request.user).order_by('-date')
     expense_logs = Expense.objects.filter(user=request.user).order_by('-date')
@@ -20,15 +27,12 @@ def dashboard(request):
         key=lambda t: t.date,
         reverse=True
     )
-
-    # Pass categories as dictionaries for JSON conversion
-    income_categories = dict(Income.INCOME_CATEGORIES)
-    expense_categories = dict(Expense.EXPENSE_CATEGORIES)
+    # Fetch user balance
+    balance = request.user.profile.balance
 
     return render(request, 'dashboard.html', {
         'transactions': transactions,
-        'income_categories': income_categories,
-        'expense_categories': expense_categories
+        'balance': balance,
     })
 
 @login_required
@@ -37,6 +41,12 @@ def add_income(request):
         category = request.POST.get('category')
         description = request.POST.get('description')
         amount = request.POST.get('amount')
+        try:
+            # Convert the amount to Decimal to avoid type issues
+            amount = Decimal(amount)
+        except (ValueError, InvalidOperation):
+            return HttpResponse("Invalid amount entered", status=400)
+
 
         Income.objects.create(
             user=request.user,
@@ -44,6 +54,10 @@ def add_income(request):
             description=description,
             amount=amount,
         )
+        # Update user balance
+        profile = request.user.profile
+        profile.balance += amount
+        profile.save()
         return redirect('dashboard')
 
     return render(request, 'add_income.html', {
@@ -57,12 +71,22 @@ def add_expense(request):
         description = request.POST.get('description')
         amount = request.POST.get('amount')
 
+        try:
+            # Convert the amount to Decimal to avoid type issues
+            amount = Decimal(amount)
+        except (ValueError, InvalidOperation):
+            return HttpResponse("Invalid amount entered", status=400)
+
         Expense.objects.create(
             user=request.user,
             category=category,
             description=description,
             amount=amount,
         )
+        # Update user balance
+        profile = request.user.profile
+        profile.balance -= amount
+        profile.save()
         return redirect('dashboard')
 
     return render(request, 'add_expense.html', {
