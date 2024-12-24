@@ -1,9 +1,43 @@
 {% extends 'base.html' %}
 
 {% block title %}Dashboard{% endblock %}
+{% block extra_styles %}
+<style>
+    /* Ensure the page takes the full height */
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    /* Ensure the dashboard section takes the full height of the viewport */
+    .container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* This ensures content starts at the top */
+        padding-top: 50px;  /* Adjust as per your design */
+    }
+
+    /* Specific styles for the dashboard page */
+    #account-balance-section {
+        padding-top: 50px;
+    }
+
+    .dashboard-header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+    /* Example for adjusting specific sections */
+    .container {
+        margin-top: 50px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container my-4">
+<div class="container my-4" id="account-balance-section">
     <!-- Welcome Message -->
     <div class="mb-4 text-center">
         <h1>Welcome, {{ user.username }}!</h1>
