@@ -1,16 +1,19 @@
 # finance/signals.py
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django.contrib.auth.models import User
-from .models import Profile
+from django.db.models import F
+from .models import Income, Expense, Profile
 
-# Signal receiver to create a profile when a new user is created
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:  # Only create the profile if the user is newly created
-        Profile.objects.create(user=instance)
+@receiver(post_delete, sender=Income)
+def update_balance_on_income_delete(sender, instance, **kwargs):
+    # Subtract the income amount from the balance if the income is deleted
+    profile = instance.user.profile
+    profile.balance -= instance.amount  # Subtract the income from balance
+    profile.save()
 
-# Signal receiver to save the profile whenever the user is saved
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()  # Save the profile related to this user
+@receiver(post_delete, sender=Expense)
+def update_balance_on_expense_delete(sender, instance, **kwargs):
+    # Add the expense amount back to the balance if the expense is deleted
+    profile = instance.user.profile
+    profile.balance += instance.amount  # Add the expense amount back to balance
+    profile.save()
