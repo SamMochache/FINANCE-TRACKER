@@ -27,7 +27,7 @@
         .navbar {
             padding: 3px 15px;
             background-color: #343a40;
-            opacity: 0.9;
+            opacity: 0.7;
         }
 
         .navbar .navbar-brand {
@@ -152,6 +152,10 @@
             <a href="#" class="btn btn-custom">Get Started</a>
         </div>
     </div>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 
     <!-- Footer -->
     <footer class="text-center">
