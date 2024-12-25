@@ -1,9 +1,34 @@
 {% extends 'base.html' %}
 
 {% block title %}Add Income{% endblock %}
+{% block extra_styles %}
+<style>
+    /* Ensure the page takes the full height */
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    /* Ensure the container spans the full height */
+    .container {
+        min-height: 100vh; /* Ensures full viewport height */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* Content starts at the top */
+        padding-top: 50px; /* Space from the top */
+    
+    }
+
+    /* Section-specific styles */
+    #add-income-section {
+        padding-top: 70px; /* Adjust padding for visual separation */
+    }
+</style>
+{% endblock %}
+
 
 {% block content %}
-<div class="container my-4">
+<div class="container my-4" id="add-income-section">
     <h2>Add Income</h2>
     <form method="POST">
         {% csrf_token %}

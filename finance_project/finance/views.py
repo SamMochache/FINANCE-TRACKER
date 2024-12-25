@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from .models import Income, Expense
 from django.contrib.auth.decorators import login_required
 from .models import Income, Expense, Profile
 from decimal import Decimal, InvalidOperation
-from django.http import HttpResponse
-
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib import messages
 
 # Create your views here.
 def home(request):
@@ -45,7 +46,8 @@ def add_income(request):
             # Convert the amount to Decimal to avoid type issues
             amount = Decimal(amount)
         except (ValueError, InvalidOperation):
-            return HttpResponse("Invalid amount entered", status=400)
+            messages.error(request, "Please enter a valid amount.")
+            return redirect('add_income')
 
 
         Income.objects.create(
@@ -58,8 +60,10 @@ def add_income(request):
         profile = request.user.profile
         profile.balance += amount
         profile.save()
-        return redirect('dashboard')
+        dashboard_url = reverse('dashboard')  # Generates the base URL for the dashboard view
+        full_url = f"{dashboard_url}#account-balance-section"
 
+        return HttpResponseRedirect(full_url)
     return render(request, 'add_income.html', {
         'categories': dict(Income.INCOME_CATEGORIES).keys()
     })
@@ -75,7 +79,8 @@ def add_expense(request):
             # Convert the amount to Decimal to avoid type issues
             amount = Decimal(amount)
         except (ValueError, InvalidOperation):
-            return HttpResponse("Invalid amount entered", status=400)
+            messages.error(request, "Please enter a valid amount.")
+            return redirect('add_expense')
 
         Expense.objects.create(
             user=request.user,
@@ -87,7 +92,10 @@ def add_expense(request):
         profile = request.user.profile
         profile.balance -= amount
         profile.save()
-        return redirect('dashboard')
+        dashboard_url = reverse('dashboard')  # Generates the base URL for the dashboard view
+        full_url = f"{dashboard_url}#account-balance-section"
+
+        return HttpResponseRedirect(full_url)
 
     return render(request, 'add_expense.html', {
         'categories': dict(Expense.EXPENSE_CATEGORIES).keys()
