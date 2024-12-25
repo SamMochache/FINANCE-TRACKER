@@ -13,21 +13,29 @@ def home(request):
     return render(request, 'base.html') 
 
 @login_required
+@login_required
 def dashboard(request):
     user = request.user
-    # Ensure the profile exists, if not create one
+
+    # Ensure the profile exists
     if not hasattr(user, 'profile'):
         Profile.objects.create(user=user)
+
     # Fetch user-specific transactions
     income_logs = Income.objects.filter(user=request.user).order_by('-date')
     expense_logs = Expense.objects.filter(user=request.user).order_by('-date')
 
-    # Combine and sort by date
-    transactions = sorted(
-        list(income_logs) + list(expense_logs),
-        key=lambda t: t.date,
-        reverse=True
-    )
+    # Combine transactions with type information
+    transactions = list(income_logs) + list(expense_logs)
+    for transaction in transactions:
+        if isinstance(transaction, Income):
+            transaction.type = 'income'
+        elif isinstance(transaction, Expense):
+            transaction.type = 'expense'
+
+    # Sort transactions by date
+    transactions.sort(key=lambda t: t.date, reverse=True)
+
     # Fetch user balance
     balance = request.user.profile.balance
 
@@ -35,6 +43,7 @@ def dashboard(request):
         'transactions': transactions,
         'balance': balance,
     })
+
 
 @login_required
 def add_income(request):

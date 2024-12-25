@@ -70,10 +70,14 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ transaction.description }}</td>
+                        <td>
+                            <span class="{% if transaction.type == 'income' %}text-success{% else %}text-danger{% endif %}">
+                                {% if transaction.type == 'income' %}Income{% else %}Expense{% endif %}
+                            </span>
+                        </td>
                         <td class="{% if transaction.type == 'income' %}text-success{% else %}text-danger{% endif %}">
                             {{ transaction.amount }}
                         </td>
-                        <td>${{ transaction.amount }}</td>
                         <td>{{ transaction.date|date:"Y-m-d H:i" }}</td>
                     </tr>
                     {% empty %}
