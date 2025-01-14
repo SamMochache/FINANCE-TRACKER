@@ -31,7 +31,20 @@ DEBUG = os.getenv('DEBUG') == 'True'
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_CLIENT_ID')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_SECRET_KEY')
 
-ALLOWED_HOSTS = []
+PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
+PLAID_SECRET = os.getenv('PLAID_SECRET')
+PLAID_ENV = 'sandbox'
+
+ALLOWED_HOSTS = [
+    '0d4f-102-213-95-50.ngrok-free.app',
+    '7058-102-213-95-50.ngrok-free.app',
+    '4111-102-213-95-50.ngrok-free.app',
+    '127.0.0.1',
+]
+CSRF_TRUSTED_ORIGINS = [
+    'https://7058-102-213-95-50.ngrok-free.app', 
+    'https://4111-102-213-95-50.ngrok-free.app' # Add your ngrok URL here
+]
 
 
 # Application definition

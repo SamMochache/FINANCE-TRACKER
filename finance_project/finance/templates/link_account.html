@@ -1,0 +1,62 @@
+<!-- link_account.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Link Your Bank Account</h1>
+
+    <!-- This button triggers Plaid Link -->
+    <button id="link-button">Link Account</button>
+
+    <script type="text/javascript">
+        var linkToken = "";  // Variable to store the link token
+
+        // Fetch the link token from the backend
+        fetch("{% url 'create_link_token' %}")
+            .then(response => response.json())
+            .then(data => {
+                if (data.link_token) {
+                    linkToken = data.link_token;  // Save the link token
+                    initializePlaidLink();
+                } else {
+                    alert("Error fetching link token.");
+                }
+            });
+
+        // Initialize the Plaid Link widget
+        function initializePlaidLink() {
+            var handler = Plaid.create({
+                token: linkToken,
+                onSuccess: function(public_token, metadata) {
+                    // Send the public_token to the server to exchange for an access token
+                    fetch("{% url 'exchange_public_token' %}", {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            public_token: public_token,
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.access_token) {
+                            alert("Bank account successfully linked!");
+                        } else {
+                            alert("Error linking bank account.");
+                        }
+                    });
+                },
+                onExit: function(err, metadata) {
+                    if (err) {
+                        alert("An error occurred: " + err.message);
+                    }
+                }
+            });
+            document.getElementById('link-button').onclick = function() {
+                handler.open();
+            };
+        }
+    </script>
+    <script type="text/javascript" src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+{% endblock %}
