@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'finance.apps.FinanceConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +75,10 @@ ROOT_URLCONF = 'finance_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'finance/templates',  # Add this line for your app's templates
+            BASE_DIR / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

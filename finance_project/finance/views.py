@@ -13,7 +13,6 @@ def home(request):
     return render(request, 'base.html') 
 
 @login_required
-@login_required
 def dashboard(request):
     user = request.user
 
