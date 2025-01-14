@@ -54,3 +54,6 @@ db.sqlite3
 
 #ignore static files
 static/
+
+account/
+allauth/
